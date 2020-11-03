@@ -275,3 +275,19 @@ function viewRoles() {
                 });
         });
 };
+
+function viewEmployee() {
+    connection.query(
+        `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
+       FROM employee_trackerDB.employee
+       INNER JOIN role ON employee.role_id = role.id
+       INNER JOIN department ON role.department_id = department.id`,
+
+        function (err, data) {
+            if (err) throw err;
+
+            console.table(data);
+            employees();
+        }
+    );
+};
