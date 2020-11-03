@@ -99,28 +99,28 @@ function addRole() {
             inquirer
                 .prompt([
                     {
-                        name: "Option",
+                        name: "choice",
                         type: "list",
                         Options: function () {
                             var choicesArray = [];
                             for (var i = 0; i < res.length; i++) {
-                                choicesArray.push(res[i].name);
+                                choiceArray.push(res[i].name);
                             }
-                            return choicesArray;
+                            return choiceArray;
                         },
                         message: "Which Department would you like to add a Role for?",
                     },
                 ])
                 .then(function (response) {
                     console.log(response);
-                    console.log(response.choices);
+                    console.log(response.choice);
 
                     connection.query(
                         `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as Department Name"
-                    FROM employeeTrackerDB.employee
+                    FROM employeetrackerDB.employee
                     INNER JOIN role ON employee.role_id = role.id
                     INNER JOIN department ON role.department_id = department.id
-                    WHERE department.name LIKE "${response.choices}"`,
+                    WHERE department.name LIKE "${response.choice}"`,
                         function (err, res) {
                             if (err) throw err;
                             console.table(res);
@@ -131,3 +131,64 @@ function addRole() {
         }
     );
 }
+
+function addEmployees() {
+    connection.query(
+        "SELECT role.title, role.id FROM employee_trackerDB.role",
+
+        function (err, data) {
+            if (err) throw err;
+
+            inquirer
+                .prompt([
+                    {
+                        name: "first_name",
+                        type: "input",
+                        message: "Please enter first name of employee."
+                    },
+                    {
+                        name: "last_name",
+                        type: "input",
+                        message: "Please enter last name of employee."
+                    },
+                    {
+                        name: "role",
+                        type: "list",
+                        message: "Please choose a role.",
+                        choices: function () {
+                            const roleArray = [];
+                            for (let i = 0; i < data.length; i++) {
+                                roleArray.push(data[i].title);
+                            }
+                            return roleArray;
+                        }
+                    },
+                ])
+                .then(function (response) {
+                    console.log(response.role);
+                    let role_id;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].title === answer.role) {
+                            role_id = data[i].id;
+                            console.log(role_id);
+                        }
+                    }
+                    connection.query(
+                        `INSERT INTO employee SET ?`,
+                        {
+                            first_name: response.first_name,
+                            last_name: response.last_name,
+                            role_id: role_id,
+                        },
+                        function (err) {
+                            if (err) throw err;
+
+                            console.log("You have added a new employee");
+
+                            employees();
+                        }
+                    )
+                })
+        }
+    )
+};
