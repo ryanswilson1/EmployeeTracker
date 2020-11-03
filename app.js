@@ -132,7 +132,7 @@ function addRole() {
     );
 }
 
-function addEmployees() {
+function addEmployee() {
     connection.query(
         "SELECT role.title, role.id FROM employee_trackerDB.role",
 
