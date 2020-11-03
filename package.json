@@ -1,0 +1,19 @@
+{
+  "name": "employeetracker",
+  "version": "1.0.0",
+  "description": "app for tracking employees",
+  "main": "app.js",
+  "scripts": {
+    "test": "Test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanswilson1/EmployeeTracker.git"
+  },
+  "author": "Ryan Wilson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanswilson1/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/ryanswilson1/EmployeeTracker#readme"
+}
