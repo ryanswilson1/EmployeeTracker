@@ -63,3 +63,28 @@ function employees() {
             }
         });
 };
+
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                name: "Department Name",
+                type: "input",
+                message: "What is the name of the Department?",
+            },
+        ])
+        .then(function (response) {
+
+            connection.query(
+                "INSERT INTO Department SET ?",
+                {
+                    name: response.name,
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log(`You have created a new Department ${response.name}.`)
+                    employees();
+                }
+            );
+        });
+}
