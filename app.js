@@ -88,3 +88,46 @@ function addDepartment() {
             );
         });
 }
+
+function addRole() {
+
+    connection.query(
+        "SELECT Department.name, Department.id FROM employee_trackerDB.Department",
+        function (err, res) {
+            if (err) throw err;
+
+            inquirer
+                .prompt([
+                    {
+                        name: "Option",
+                        type: "list",
+                        Options: function () {
+                            var choicesArray = [];
+                            for (var i = 0; i < res.length; i++) {
+                                choicesArray.push(res[i].name);
+                            }
+                            return choicesArray;
+                        },
+                        message: "Which Department would you like to add a Role for?",
+                    },
+                ])
+                .then(function (response) {
+                    console.log(response);
+                    console.log(response.choices);
+
+                    connection.query(
+                        `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as Department Name"
+                    FROM employeeTrackerDB.employee
+                    INNER JOIN role ON employee.role_id = role.id
+                    INNER JOIN department ON role.department_id = department.id
+                    WHERE department.name LIKE "${response.choices}"`,
+                        function (err, res) {
+                            if (err) throw err;
+                            console.table(res);
+                            employees();
+                        }
+                    );
+                });
+        }
+    );
+}
