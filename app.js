@@ -215,7 +215,7 @@ function viewDepartments() {
                     }
                 ])
                 .then(function (response) {
-                    console.log(answer.department);
+                    console.log(response.department);
 
                     connection.query(
                         `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
@@ -232,5 +232,46 @@ function viewDepartments() {
                     );
                 });
 
+        });
+};
+
+function viewRoles() {
+    connection.query(
+        `SELECT role.title FROM employee_trackerDB.role`,
+        function (err, data) {
+            if (err) throw err;
+
+            inquirer
+                .prompt([
+                    {
+                        name: "role",
+                        type: "list",
+                        message: "Please choose a role.",
+                        choices: function () {
+                            const roleArray = [];
+                            for (let i = 0; i < data.length; i++) {
+                                roleArray.push(data[i].title);
+                            }
+                            return roleArray;
+                        }
+                    },
+                ])
+                .then(function (response) {
+                    console.log(response.role);
+
+                    connection.query(
+                        `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as "Department Name"
+               FROM employee_trackerDB.employee
+               INNER JOIN role ON employee.role_id = role.id
+               INNER JOIN department ON role.department_id = department.id
+               WHERE role.title LIKE "${response.role}"`,
+                        function (err, data) {
+                            if (err) throw err;
+
+                            console.table(data);
+                            employees();
+                        }
+                    );
+                });
         });
 };
