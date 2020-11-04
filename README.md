@@ -24,7 +24,7 @@
   The following necessary dependencies must be installed to run the application properly: run command node app.js
   
   # Usage
-  ​This application is used for 
+  ​This application is used for tracking your employees, their departments and salaries.
   
   # License
   This project is license under the  license.
