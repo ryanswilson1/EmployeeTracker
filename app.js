@@ -7,7 +7,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "zaq1zaq1ZAQ!ZAQ!",
     database: "employee_trackerDB"
 });
 
@@ -68,7 +68,7 @@ function addDepartment() {
     inquirer
         .prompt([
             {
-                name: "Department Name",
+                name: "name",
                 type: "input",
                 message: "What is the name of the Department?",
             },
@@ -92,45 +92,63 @@ function addDepartment() {
 function addRole() {
 
     connection.query(
-        "SELECT Department.name, Department.id FROM employee_trackerDB.Department",
+        "SELECT department.name, department.id FROM employee_trackerDB.department",
         function (err, res) {
             if (err) throw err;
 
             inquirer
                 .prompt([
                     {
-                        name: "choice",
+                        name: "title",
+                        type: "input",
+                        message: "Please input role name"
+                    },
+                    {
+                        name: "salary",
+                        type: "input",
+                        message: "Please input salary"
+                    },
+                    {
+                        name: "department",
                         type: "list",
-                        Options: function () {
-                            var choicesArray = [];
-                            for (var i = 0; i < res.length; i++) {
-                                choiceArray.push(res[i].name);
+                        message: "Which department?",
+                        choices: function () {
+                            const departmentArray = [];
+                            const departmentArrayID = [];
+                            for (let i = 0; i < data.length; i++) {
+                                departmentArray.push(data[i].name);
+                                departmentArrayID.push(data[i].id);
                             }
-                            return choiceArray;
-                        },
-                        message: "Which Department would you like to add a Role for?",
+                            return departmentArray;
+                        }
                     },
                 ])
                 .then(function (response) {
-                    console.log(response);
-                    console.log(response.choice);
+                    let department_id;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].name === response.department) {
+                            department_id = data[i].id;
+                            console.log(department_id);
+                        }
+                    }
 
                     connection.query(
-                        `SELECT employee.first_name, employee.last_name, role.salary, role.title, department.name as Department Name"
-                    FROM employeetrackerDB.employee
-                    INNER JOIN role ON employee.role_id = role.id
-                    INNER JOIN department ON role.department_id = department.id
-                    WHERE department.name LIKE "${response.choice}"`,
-                        function (err, res) {
+                        `INSERT INTO role SET ?`,
+                        {
+                            title: response.title,
+                            salary: response.salary,
+                            department_id: department_id
+                        },
+                        function (err) {
                             if (err) throw err;
-                            console.table(res);
+
+                            console.log(`${response.title} with salary of ${response.salary} in ${department_id} was created!`)
                             employees();
                         }
                     );
                 });
-        }
-    );
-}
+        });
+};
 
 function addEmployee() {
     connection.query(
@@ -168,7 +186,7 @@ function addEmployee() {
                     console.log(response.role);
                     let role_id;
                     for (let i = 0; i < data.length; i++) {
-                        if (data[i].title === answer.role) {
+                        if (data[i].title === response.role) {
                             role_id = data[i].id;
                             console.log(role_id);
                         }
@@ -206,11 +224,11 @@ function viewDepartments() {
                         type: "list",
                         message: "Please select a Department.",
                         choices: function () {
-                            const departmentArray = [];
+                            const departmentArrayay = [];
                             for (let i = 0; i < data.length; i++) {
-                                departmentArray.push(data[i].name);
+                                departmentArrayay.push(data[i].name);
                             }
-                            return departmentArray;
+                            return departmentArrayay;
                         }
                     }
                 ])
@@ -290,4 +308,107 @@ function viewEmployee() {
             employees();
         }
     );
+};
+
+function updateEmployeeRole() {
+    connection.query(
+        `SELECT employee.first_name, employee.last_name, role.salary, role.title, role.id, department.name as "Department Name"
+       FROM employee_trackerDB.employee
+       INNER JOIN role ON employee.role_id = role.id
+       INNER JOIN department ON role.department_id = department.id`,
+
+        function (err, data) {
+            if (err) throw err;
+
+            inquirer
+                .prompt([
+                    {
+                        name: "employee",
+                        type: "list",
+                        message: "Please choose an employee to update.",
+                        choices: function () {
+                            const employeeArray = [];
+                            for (let i = 0; i < data.length; i++) {
+                                employeeArray.push(`${data[i].first_name} ${data[i].last_name}`)
+                            }
+                            return employeeArray;
+                        }
+                    }
+                ])
+                .then(function (response) {
+                    connection.query(
+                        `SELECT role.title, role.id, role.salary
+                        FROM employee_trackerDB.role`,
+
+                        function (err, data) {
+                            if (err) throw err;
+
+                            inquirer
+                                .prompt([
+                                    {
+                                        name: "newRole",
+                                        type: "list",
+                                        message: "Please choose new role for employee",
+                                        choices: function () {
+                                            const roleArray = [];
+                                            for (let i = 0; i < data.length; i++) {
+                                                roleArray.push(data[i].title);
+                                            }
+                                            return roleArray;
+                                        }
+                                    }
+                                ])
+                                .then(function (response2) {
+                                    let role_id, employee_id;
+
+                                    connection.query(
+                                        `SELECT employee.first_name, employee.last_name, employee.id
+                                         FROM employee_trackerDB.employee`,
+
+                                        function (err, data2) {
+                                            if (err) throw err;
+
+                                            for (let i = 0; i < data2.length; i++) {
+                                                if (`${data2[i].first_name} ${data2[i].last_name}` === response.employee) {
+                                                    employee_id = data2[i].id;
+                                                }
+                                            }
+                                            connection.query(
+                                                `SELECT role.title, role.salary, role.id
+                                                FROM employee_trackerDB.role`,
+
+                                                function (err, data3) {
+                                                    if (err) throw err;
+                                                    for (let i = 0; i < data3.length; i++) {
+                                                        if (`${data3[i].title}` === response2.newRole) {
+                                                            role_id = data3[i].id;
+                                                        }
+                                                    }
+
+                                                    connection.query(
+                                                        `UPDATE employee
+                                                         SET ?
+                                                         WHERE ?`,
+                                                        [
+                                                            {
+                                                                role_id: role_id
+                                                            },
+                                                            {
+                                                                id: employee_id
+                                                            }
+                                                        ],
+                                                        function (err) {
+                                                            if (err) throw err;
+                                                            console.log("Role Changed!");
+                                                            employees();
+                                                        }
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                })
+                        });
+                });
+        });
 };
