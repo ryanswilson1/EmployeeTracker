@@ -3,6 +3,8 @@
   
   # Description
   This is a simple web application that allows you to create departments, roles, and employees.  From there you can view employees, their salaries, and their perspective department.  This app helps keep positive control of your employees and their information within the company.
+
+  A tutorial of this applicaton can be viewed at the following link: https://drive.google.com/file/d/1ftIKdW3ta_NFltKiTZfI955LBp-L48u-/view
   
   # Table of Contents 
   
