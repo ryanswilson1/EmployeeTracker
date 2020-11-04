@@ -93,7 +93,7 @@ function addRole() {
 
     connection.query(
         "SELECT department.name, department.id FROM employee_trackerDB.department",
-        function (err, res) {
+        function (err, data) {
             if (err) throw err;
 
             inquirer
