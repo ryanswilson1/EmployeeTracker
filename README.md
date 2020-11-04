@@ -30,7 +30,7 @@
   This project is license under the  license.
   
   # Contributing
-  ​Contributors: Contributors: Ryan S Wilson
+  ​Contributors: Ryan S Wilson
   
   # Tests
   To run tests, you need to run the following command: run application
